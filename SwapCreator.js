@@ -4,6 +4,9 @@ require("dotenv").config();
 
 const connection = new Connection(process.env.SOLANA_WS_URL, "confirmed");
 const RAYDIUM_AMM_PROGRAM_ID = new PublicKey(process.env.RAYDIUM_AMM_PROGRAM_ID);
+const SYSTEM_PROGRAM_ID = "11111111111111111111111111111111"; // Solana System Program ID
+const TOKEN_PROGRAM_ID_STR = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"; // Token Program ID
+const ASSOCIATED_TOKEN_PROGRAM_ID_STR = "ATokenGPv1sfdS5qUnx9GbS6hX1TTjR1L6rT3HaZJFA"; // Associated Token Program ID
 
 let db;
 
@@ -103,23 +106,22 @@ async function processRaydiumLpTransaction(connection, signature) {
                 const ammAuthority = accounts[accountIndices[5]]; // AMM authority
                 const ammTarget = accounts[accountIndices[13]]; // AMM target orders
                 const ammOpenOrder = accounts[accountIndices[6]]; // AMM open orders
-                const marketProgram = accounts[accountIndices[15]]; // Serum market program
-                const marketId = accounts[accountIndices[16]]; // Serum market ID
 
                 let tokenData = {
-                    programId: new PublicKey(accounts[accountIndices[0]]).toString(),
-                    ammId: new PublicKey(poolId).toString(),
-                    ammAuthority: new PublicKey(ammAuthority).toString(),
+                    programId: new PublicKey(accounts[accountIndices[0]]).toString(), // Raydium AMM Program ID
+                    ammId: new PublicKey(poolId).toString(), // AMM Pool Account
+                    ammAuthority: new PublicKey(ammAuthority).toString(), // AMM Authority Account
                     ammOpenOrders: new PublicKey(ammOpenOrder).toString(),
-                    lpMint: new PublicKey(lpTokenMint).toString(),
-                    coinMint: new PublicKey(mint0).toString(),
-                    pcMint: new PublicKey(mint1).toString(),
-                    coinVault: new PublicKey(baseVault).toString(),
-                    pcVault: new PublicKey(quoteVault).toString(),
+                    lpMint: new PublicKey(lpTokenMint).toString(), // LP Token Mint
+                    coinMint: new PublicKey(mint0).toString(), // Base Token Mint
+                    pcMint: new PublicKey(mint1).toString(), // Quote Token Mint
+                    coinVault: new PublicKey(baseVault).toString(), // Base Token Vault
+                    pcVault: new PublicKey(quoteVault).toString(), // Quote Token Vault
                     ammTargetOrders: new PublicKey(ammTarget).toString(),
-                    serumMarket: new PublicKey(marketId).toString(),
-                    serumProgram: new PublicKey(marketProgram).toString(),
-                    deployer: new PublicKey(deployer).toString(),
+                    deployer: new PublicKey(deployer).toString(), // Deployer's Address
+                    systemProgramId: SYSTEM_PROGRAM_ID, // System Program ID
+                    tokenProgramId: TOKEN_PROGRAM_ID_STR, // Token Program ID
+                    associatedTokenProgramId: ASSOCIATED_TOKEN_PROGRAM_ID_STR, // Associated Token Program ID
                 };
 
                 tokenData = invertCoinAndPcMint(tokenData);
